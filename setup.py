@@ -9,12 +9,12 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="ai-sportverletzung-assistant",
     version="1.0.0",
-    author="Ihr Name",
-    author_email="ihr.email@example.com",
-    description="Ein intelligenter AI-Chatbot für Sportverletzungsberatung",
+    author="Your Name",
+    author_email="your.email@example.com",
+    description="An intelligent AI chatbot for sports injury consultation",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ihr-username/ai-sportverletzung-assistant",
+    url="https://github.com/your-username/ai-sportverletzung-assistant",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",

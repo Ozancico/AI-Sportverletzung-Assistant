@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const typingIndicator = document.getElementById('typingIndicator');
     const quickQuestions = document.querySelectorAll('.quick-question');
 
-    // Event Listener für das Chat-Formular
+    // Event listener for chat form
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const message = messageInput.value.trim();
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event Listener für Schnellfragen
+    // Event listener for quick questions
     quickQuestions.forEach(button => {
         button.addEventListener('click', function() {
             const question = this.getAttribute('data-question');
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Enter-Taste für Senden
+    // Enter key for sending
     messageInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -35,15 +35,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Auto-Focus auf Input
+    // Auto-focus on input
     messageInput.focus();
 
-    // Nachricht senden
+    // Send message
     async function sendMessage(message) {
-        // Benutzernachricht anzeigen
+        // Display user message
         addMessage(message, 'user');
         
-        // UI für "AI denkt nach" anzeigen
+        // Show "AI is thinking" UI
         showTypingIndicator();
         disableInput();
 
@@ -59,17 +59,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                // AI-Antwort anzeigen
+                // Display AI response
                 hideTypingIndicator();
                 addMessage(data.answer, 'assistant');
             } else {
-                // Fehler anzeigen
+                // Display error
                 hideTypingIndicator();
                 addMessage('Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.', 'assistant');
                 console.error('Error:', data.error);
             }
         } catch (error) {
-            // Netzwerkfehler
+            // Network error
             hideTypingIndicator();
             addMessage('Verbindungsfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.', 'assistant');
             console.error('Network error:', error);
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Nachricht zum Chat hinzufügen
+    // Add message to chat
     function addMessage(content, sender) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
@@ -95,11 +95,11 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.appendChild(messageContent);
         chatMessages.appendChild(messageDiv);
         
-        // Zum Ende scrollen
+        // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Nachricht formatieren (Zeilenumbrüche, etc.)
+    // Format message (line breaks, etc.)
     function formatMessage(content) {
         return content
             .replace(/\n/g, '<br>')
@@ -107,25 +107,25 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/\*(.*?)\*/g, '<em>$1</em>');
     }
 
-    // Typing Indicator anzeigen
+    // Show typing indicator
     function showTypingIndicator() {
         typingIndicator.style.display = 'block';
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Typing Indicator verstecken
+    // Hide typing indicator
     function hideTypingIndicator() {
         typingIndicator.style.display = 'none';
     }
 
-    // Input deaktivieren
+    // Disable input
     function disableInput() {
         messageInput.disabled = true;
         sendButton.disabled = true;
         sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     }
 
-    // Input aktivieren
+    // Enable input
     function enableInput() {
         messageInput.disabled = false;
         sendButton.disabled = false;
@@ -133,13 +133,13 @@ document.addEventListener('DOMContentLoaded', function() {
         messageInput.focus();
     }
 
-    // Auto-Resize für Textarea (falls später verwendet)
+    // Auto-resize for textarea (if used later)
     function autoResize(textarea) {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
     }
 
-    // Smooth Scrolling
+    // Smooth scrolling
     function smoothScrollToBottom() {
         chatMessages.scrollTo({
             top: chatMessages.scrollHeight,
@@ -147,36 +147,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Keyboard Shortcuts
+    // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + K für neuen Chat
+        // Ctrl/Cmd + K for new chat
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             messageInput.focus();
         }
         
-        // Escape um Input zu leeren
+        // Escape to clear input
         if (e.key === 'Escape') {
             messageInput.value = '';
             messageInput.focus();
         }
     });
 
-    // Chat-Historie laden (falls vorhanden)
+    // Load chat history (if available)
     loadChatHistory();
 
     async function loadChatHistory() {
         try {
             const response = await fetch('/api/health');
             if (response.ok) {
-                console.log('Verbindung zum Server erfolgreich');
+                console.log('Server connection successful');
             }
         } catch (error) {
-            console.error('Server-Verbindung fehlgeschlagen:', error);
+            console.error('Server connection failed:', error);
         }
     }
 
-    // Utility-Funktionen
+    // Utility functions
     function formatTimestamp(timestamp) {
         const date = new Date(timestamp);
         return date.toLocaleString('de-DE', {
@@ -188,16 +188,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Error Handling
+    // Error handling
     window.addEventListener('error', function(e) {
         console.error('JavaScript Error:', e.error);
     });
 
-    // Service Worker Registration (für zukünftige PWA-Features)
+    // Service Worker Registration (for future PWA features)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-            // Service Worker kann hier registriert werden
-            console.log('Service Worker Support verfügbar');
+            // Service Worker can be registered here
+            console.log('Service Worker support available');
         });
     }
 });

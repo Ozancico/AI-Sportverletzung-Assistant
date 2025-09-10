@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 import uuid
 
-# Lade Umgebungsvariablen
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
@@ -16,10 +16,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# OpenAI API Key setzen
+# Set OpenAI API Key
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-# Datenbank Modelle
+# Database Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(36), unique=True, nullable=False)
@@ -36,7 +36,7 @@ class ChatHistory(db.Model):
     answer = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-# Sportverletzungs-spezifische Prompts
+# Sport injury specific prompts
 SPORT_INJURY_SYSTEM_PROMPT = """
 Du bist ein spezialisierter AI-Assistent für Sportverletzungen. Deine Aufgabe ist es, Nutzern bei Fragen zu sportlichen Verletzungen zu helfen.
 
@@ -63,7 +63,7 @@ Beispiele für Selbsthilfe-Empfehlungen:
 """
 
 def get_or_create_user():
-    """Holt oder erstellt einen Benutzer basierend auf der Session"""
+    """Get or create a user based on the session"""
     if 'user_id' not in session:
         session['user_id'] = str(uuid.uuid4())
     
@@ -76,7 +76,7 @@ def get_or_create_user():
     return user
 
 def get_ai_response(question, user_language='de'):
-    """Holt eine Antwort von der OpenAI API"""
+    """Get a response from the OpenAI API"""
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -93,25 +93,25 @@ def get_ai_response(question, user_language='de'):
 
 @app.route('/')
 def index():
-    """Hauptseite"""
+    """Main page"""
     return render_template('index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    """Chat-Endpoint für AI-Unterhaltungen"""
+    """Chat endpoint for AI conversations"""
     data = request.get_json()
     question = data.get('question', '').strip()
     
     if not question:
         return jsonify({'error': 'Bitte geben Sie eine Frage ein.'}), 400
     
-    # Benutzer holen oder erstellen
+    # Get or create user
     user = get_or_create_user()
     
-    # AI-Antwort generieren
+    # Generate AI response
     answer = get_ai_response(question, user.language)
     
-    # Chat-Verlauf speichern
+    # Save chat history
     chat_id = str(uuid.uuid4())
     chat_history = ChatHistory(
         chat_id=chat_id,
@@ -130,7 +130,7 @@ def chat():
 
 @app.route('/history')
 def history():
-    """Chat-Verlauf anzeigen"""
+    """Display chat history"""
     user = get_or_create_user()
     chat_histories = ChatHistory.query.filter_by(user_id=user.id).order_by(ChatHistory.timestamp.desc()).limit(20).all()
     
@@ -138,7 +138,7 @@ def history():
 
 @app.route('/api/health')
 def health_check():
-    """Health Check Endpoint"""
+    """Health check endpoint"""
     return jsonify({'status': 'healthy', 'timestamp': datetime.utcnow().isoformat()})
 
 if __name__ == '__main__':

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Sportverletzung-Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-dumbbell"></i> Sportverletzung Assistant</h3>
+                    <p class="text-muted">AI-gestützte Beratung für Sportverletzungen</p>
+                </div>
+                
+                <div class="sidebar-content">
+                    <div class="disclaimer">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Wichtiger Hinweis:</strong>
+                            <br>Dieser Assistant ersetzt keine ärztliche Beratung. Bei ernsten Symptomen suchen Sie bitte einen Arzt auf.
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <h5>Häufige Fragen:</h5>
+                        <button class="btn btn-outline-primary btn-sm quick-question" data-question="Ich habe Schmerzen im Knie nach dem Laufen. Was kann ich tun?">
+                            <i class="fas fa-running"></i> Knieschmerzen
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm quick-question" data-question="Mein Sprunggelenk ist geschwollen. Sollte ich zum Arzt?">
+                            <i class="fas fa-foot-prints"></i> Sprunggelenk
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm quick-question" data-question="Ich habe Muskelkater in den Beinen. Wie kann ich das behandeln?">
+                            <i class="fas fa-dumbbell"></i> Muskelkater
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm quick-question" data-question="Mein Rücken schmerzt nach dem Training. Was sind die ersten Maßnahmen?">
+                            <i class="fas fa-user-injured"></i> Rückenschmerzen
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Chat Area -->
+            <div class="col-md-9 main-content">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h4><i class="fas fa-comments"></i> Chat mit dem AI-Assistant</h4>
+                        <div class="header-actions">
+                            <a href="/history" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-history"></i> Verlauf
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant-message">
+                            <div class="message-content">
+                                <i class="fas fa-robot"></i>
+                                <p>Hallo! Ich bin Ihr AI-Assistant für Sportverletzungen. Wie kann ich Ihnen heute helfen? Beschreiben Sie Ihre Symptome oder stellen Sie Ihre Frage.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <form id="chatForm" class="chat-form">
+                            <div class="input-group">
+                                <input type="text" id="messageInput" class="form-control" placeholder="Beschreiben Sie Ihre Sportverletzung oder stellen Sie eine Frage..." required>
+                                <button type="submit" class="btn btn-primary" id="sendButton">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                            <i class="fas fa-circle-notch fa-spin"></i> AI denkt nach...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

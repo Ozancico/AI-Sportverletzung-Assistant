@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import uuid
 from openai import OpenAI
+import openai
 
 # Load environment variables
 load_dotenv()
@@ -76,7 +77,17 @@ def get_or_create_user():
     return user
 
 def get_ai_response(question, user_language='de'):
-    """Get a response from the OpenAI API"""
+    """Get a response from the OpenAI API or return a stub in TEST_MODE"""
+    # TEST_MODE: return deterministic, free stubbed answer
+    if os.getenv('TEST_MODE', 'false').lower() in ('1', 'true', 'yes'):
+        return (
+            "Hinweis: Testmodus aktiv (keine echten AI-Antworten).\n\n"
+            "Erste Maßnahmen bei Schwellung am Handgelenk:\n"
+            "- Ruhe und Schonung (Belastung pausieren)\n"
+            "- Kühlung (10–15 Min., 2–3×/Tag)\n"
+            "- Leichte Kompression (Bandage), Arm hochlagern\n"
+            "- Bei starken Schmerzen/Fehlstellung: ärztliche Abklärung"
+        )
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -88,8 +99,21 @@ def get_ai_response(question, user_language='de'):
             temperature=0.7
         )
         return response.choices[0].message.content
-    except Exception as e:
-        return f"Entschuldigung, es gab einen Fehler bei der Verarbeitung Ihrer Anfrage: {str(e)}"
+    except openai.APIStatusError as e:
+        code = getattr(e, 'status_code', None)
+        if code == 401:
+            return (
+                "Leider konnte Ihre Anfrage nicht verarbeitet werden (Auth-Fehler).\n"
+                "Bitte prüfen Sie den API-Key in der .env-Datei."
+            )
+        if code == 429:
+            return (
+                "Aktuell ist das API-Kontingent erschöpft (429).\n"
+                "Bitte Billing prüfen oder später erneut versuchen."
+            )
+        return "Ein unerwarteter API-Fehler ist aufgetreten. Bitte später erneut versuchen."
+    except Exception:
+        return "Es ist ein technischer Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 
 @app.route('/')
 def index():

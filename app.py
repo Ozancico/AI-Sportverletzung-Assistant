@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import openai
 import os
 from dotenv import load_dotenv
 import uuid
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
@@ -16,8 +16,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Set OpenAI API Key
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# Init OpenAI client
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # Database Models
 class User(db.Model):
@@ -78,8 +78,8 @@ def get_or_create_user():
 def get_ai_response(question, user_language='de'):
     """Get a response from the OpenAI API"""
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": SPORT_INJURY_SYSTEM_PROMPT},
                 {"role": "user", "content": question}

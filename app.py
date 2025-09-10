@@ -77,17 +77,7 @@ def get_or_create_user():
     return user
 
 def get_ai_response(question, user_language='de'):
-    """Get a response from the OpenAI API or return a stub in TEST_MODE"""
-    # TEST_MODE: return deterministic, free stubbed answer
-    if os.getenv('TEST_MODE', 'false').lower() in ('1', 'true', 'yes'):
-        return (
-            "Hinweis: Testmodus aktiv (keine echten AI-Antworten).\n\n"
-            "Erste Maßnahmen bei Schwellung am Handgelenk:\n"
-            "- Ruhe und Schonung (Belastung pausieren)\n"
-            "- Kühlung (10–15 Min., 2–3×/Tag)\n"
-            "- Leichte Kompression (Bandage), Arm hochlagern\n"
-            "- Bei starken Schmerzen/Fehlstellung: ärztliche Abklärung"
-        )
+    """Get a response from the OpenAI API"""
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",

@@ -76,15 +76,25 @@ def main():
         print("3. Run this script again")
         sys.exit(1)
     
+    # Determine port from environment variables, default to 5000
+    port_env = os.getenv('PORT') or os.getenv('FLASK_RUN_PORT')
+    try:
+        port = int(port_env) if port_env else 5000
+    except ValueError:
+        port = 5000
+
     print("\n🚀 Starting application...")
-    print("   Open http://localhost:5000 in your browser")
+    print(f"   Open http://localhost:{port} in your browser")
     print("   Press Ctrl+C to stop")
     print("=" * 50)
     
     # Start Flask application
     try:
-        from app import app
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        from app import app, db
+        # Ensure database tables exist
+        with app.app_context():
+            db.create_all()
+        app.run(debug=True, host='0.0.0.0', port=port, use_reloader=False, threaded=True)
     except KeyboardInterrupt:
         print("\n👋 Application stopped")
     except Exception as e:

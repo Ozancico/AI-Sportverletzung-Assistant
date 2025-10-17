@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.getElementById('sendButton');
     const typingIndicator = document.getElementById('typingIndicator');
     const quickQuestions = document.querySelectorAll('.quick-question');
+    const themeToggle = document.getElementById('themeToggle');
+    const accentOptions = document.querySelectorAll('.accent-option');
 
     // Event listener for chat form
     chatForm.addEventListener('submit', function(e) {
@@ -37,6 +39,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Auto-focus on input
     messageInput.focus();
+
+    // Theme initialisieren und Toggle-Button verbinden
+    initTheme();
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            const isDark = document.body.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    }
+
+    // Accent color Auswahl
+    accentOptions.forEach(opt => {
+        opt.addEventListener('click', function(e) {
+            e.preventDefault();
+            const color = this.getAttribute('data-accent');
+            setAccent(color);
+        });
+    });
 
     // Send message
     async function sendMessage(message) {
@@ -87,16 +108,54 @@ document.addEventListener('DOMContentLoaded', function() {
         messageContent.className = 'message-content';
         
         if (sender === 'assistant') {
-            messageContent.innerHTML = `<i class="fas fa-robot"></i><span>${formatMessage(content)}</span>`;
+            messageContent.innerHTML = `<div class="avatar avatar-assistant"><i class="fas fa-robot"></i></div><span class="msg-text">${formatMessage(content)}</span>`;
         } else {
-            messageContent.textContent = content;
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar avatar-user';
+            avatar.innerHTML = '<i class="fas fa-user"></i>';
+            const textSpan = document.createElement('span');
+            textSpan.className = 'msg-text';
+            textSpan.textContent = content;
+            messageContent.appendChild(avatar);
+            messageContent.appendChild(textSpan);
         }
+
+        // Meta-Bereich (Timestamp + Copy)
+        const meta = buildMessageMeta(messageContent);
+        messageContent.appendChild(meta);
         
         messageDiv.appendChild(messageContent);
         chatMessages.appendChild(messageDiv);
         
         // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function buildMessageMeta(container) {
+        const meta = document.createElement('div');
+        meta.className = 'message-meta';
+        const ts = document.createElement('span');
+        ts.className = 'timestamp';
+        ts.textContent = new Date().toLocaleString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-light btn-sm copy-btn';
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+        copyBtn.title = 'Kopieren';
+        copyBtn.addEventListener('click', function() { handleCopy(container, copyBtn); });
+
+        meta.appendChild(ts);
+        meta.appendChild(copyBtn);
+        return meta;
+    }
+
+    function handleCopy(container, btn) {
+        const textNode = container.querySelector('.msg-text');
+        const text = textNode ? textNode.innerText : container.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => (btn.innerHTML = '<i class=\"fas fa-copy\"></i>'), 1200);
+        }).catch(err => console.error('Copy failed', err));
     }
 
     // Format message (line breaks, etc.)
@@ -146,6 +205,16 @@ document.addEventListener('DOMContentLoaded', function() {
             behavior: 'smooth'
         });
     }
+
+    // Delegierte Klick-Behandlung für statische Copy-Buttons (z. B. Willkommensnachricht)
+    chatMessages.addEventListener('click', function(e) {
+        const target = e.target.closest('.copy-btn');
+        if (!target) return;
+        const container = e.target.closest('.message-content');
+        if (container) {
+            handleCopy(container, target);
+        }
+    });
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
@@ -199,5 +268,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // Service Worker can be registered here
             console.log('Service Worker support available');
         });
+    }
+
+    function initTheme() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const useDark = saved ? saved === 'dark' : prefersDark;
+        if (useDark) {
+            document.body.classList.add('dark');
+        }
+        if (themeToggle) {
+            themeToggle.innerHTML = document.body.classList.contains('dark') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
+        const savedAccent = localStorage.getItem('accent');
+        if (savedAccent) setAccent(savedAccent);
+    }
+
+    function setAccent(color) {
+        document.body.style.setProperty('--accent-color', color);
+        document.body.setAttribute('data-accent', '1');
+        localStorage.setItem('accent', color);
     }
 });

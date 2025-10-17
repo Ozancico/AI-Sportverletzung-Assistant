@@ -47,10 +47,27 @@
             
             <!-- Main Chat Area -->
             <div class="col-md-9 main-content">
-                <div class="chat-container">
+                <div class="chat-container container-narrow">
                     <div class="chat-header">
-                        <h4><i class="fas fa-comments"></i> Chat mit dem AI-Assistant</h4>
+                        <div class="brand">
+                            <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" class="brand-logo"/>
+                            <h4><i class="fas fa-comments"></i> Chat mit dem AI-Assistant</h4>
+                        </div>
                         <div class="header-actions">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="themeToggle" aria-label="Theme umschalten">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                            <div class="accent-picker dropdown d-inline-block">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="accentMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Akzent
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="accentMenu">
+                                    <li><a class="dropdown-item accent-option" data-accent="#3498db" href="#">Blau</a></li>
+                                    <li><a class="dropdown-item accent-option" data-accent="#10b981" href="#">Grün</a></li>
+                                    <li><a class="dropdown-item accent-option" data-accent="#8b5cf6" href="#">Violett</a></li>
+                                    <li><a class="dropdown-item accent-option" data-accent="#ef4444" href="#">Rot</a></li>
+                                </ul>
+                            </div>
                             <a href="/history" class="btn btn-outline-secondary btn-sm">
                                 <i class="fas fa-history"></i> Verlauf
                             </a>
@@ -60,8 +77,14 @@
                     <div class="chat-messages" id="chatMessages">
                         <div class="message assistant-message">
                             <div class="message-content">
-                                <i class="fas fa-robot"></i>
-                                <p>Hallo! Ich bin Ihr AI-Assistant für Sportverletzungen. Wie kann ich Ihnen heute helfen? Beschreiben Sie Ihre Symptome oder stellen Sie Ihre Frage.</p>
+                                <div class="avatar avatar-assistant"><i class="fas fa-robot"></i></div>
+                                <p class="msg-text" id="welcomeText">Hallo! Ich bin Ihr AI-Assistant für Sportverletzungen. Wie kann ich Ihnen heute helfen? Beschreiben Sie Ihre Symptome oder stellen Sie Ihre Frage.</p>
+                                <div class="message-meta">
+                                    <span class="timestamp" id="welcomeTimestamp"></span>
+                                    <button class="btn btn-light btn-sm copy-btn" title="Kopieren">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
